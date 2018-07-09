@@ -77,11 +77,12 @@ public class NumInputEditText extends android.support.v7.widget.AppCompatEditTex
         height = height - paddingTop - paddingBottom;
         int w = (int) ((width - mItemPadding * (mLength - 1)) / (double) mLength);
         int i = 0;
-        int top = getPaddingTop();
-        int bottom = height - getPaddingBottom();
+        int halfStokeWidth = mStokeWidth / 2;
+        int top = getPaddingTop() + halfStokeWidth;
+        int bottom = height - getPaddingBottom() - halfStokeWidth;
         for (Rect rect : mRects) {
-            int left = paddingLeft + i * (mItemPadding + w);
-            int right = left + w;
+            int left = paddingLeft + i * (mItemPadding + w) + halfStokeWidth;
+            int right = left + w - halfStokeWidth;
             rect.set(left, top, right, bottom);
             i++;
         }

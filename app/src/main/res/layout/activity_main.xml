@@ -19,7 +19,6 @@
        android:id="@+id/nub_input_edit_text"
        android:layout_width="match_parent"
        android:layout_height="50dp"
-       android:padding="10dp"
        style="@style/NumInputEditTextDefaultTheme"
        app:layout_constraintLeft_toLeftOf="parent"
        app:layout_constraintRight_toRightOf="parent"
