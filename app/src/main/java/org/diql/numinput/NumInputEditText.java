@@ -24,12 +24,12 @@ public class NumInputEditText extends android.support.v7.widget.AppCompatEditTex
     private int mLength;
     private int mItemPadding;
 
-    private Path mPath;
     private Rect[] mRects;
 
     private Paint mBgPaint;
     private Paint mRoundPaint;
     private int mRoundSize;
+    private int mStokeWidth;
 
     public NumInputEditText(Context context) {
         this(context, null);
@@ -40,16 +40,17 @@ public class NumInputEditText extends android.support.v7.widget.AppCompatEditTex
         mLength = 6;
         mItemPadding = DisplayUtil.dip2pxInt(context, 5);
         mRoundSize = DisplayUtil.dip2pxInt(context, 10);
+        mStokeWidth = DisplayUtil.dip2pxInt(context, 1);
 
-        mPath = new Path();
         mRects = new Rect[mLength];
         for (int i = 0; i < mRects.length; i++) {
             mRects[i] = new Rect();
         }
 
         mBgPaint = new Paint();
-        mBgPaint.setColor(Color.parseColor("#00ff00"));
-        mBgPaint.setStrokeWidth(DisplayUtil.dip2pxInt(context, 1));
+        mBgPaint.setColor(Color.GRAY);
+        mBgPaint.setStyle(Paint.Style.STROKE);
+        mBgPaint.setStrokeWidth(mStokeWidth);
 
         mRoundPaint = new Paint();
         mRoundPaint.setColor(Color.BLACK);
@@ -61,25 +62,25 @@ public class NumInputEditText extends android.support.v7.widget.AppCompatEditTex
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int measuredWidth = getMeasuredWidth();
         int measuredHeight = getMeasuredHeight();
-        if (measuredWidth != mWidth || measuredHeight != mHeight) {
-            mWidth = measuredWidth;
-            mHeight = measuredHeight;
-            resetInputPath(measuredWidth, measuredHeight);
-        }
+        mWidth = measuredWidth;
+        mHeight = measuredHeight;
         Log.d(TAG, "onMeasure: width:" + mWidth + ".mHeight:" + mHeight);
     }
 
-    private void resetInputPath(int measuredWidth, int measuredHeight) {
-        if (measuredWidth == 0 || measuredHeight == 0) {
-            return;
-        }
-        mPath.addRect(0, 0, measuredWidth, measuredHeight, Path.Direction.CCW);
-        int w = (int) ((measuredWidth - mItemPadding * (mLength - 1)) / (double) mLength);
+    private void resetInputPath(int width, int height) {
+        int paddingLeft = getPaddingLeft();
+        int paddingRight = getPaddingRight();
+        int paddingTop = getPaddingTop();
+        int paddingBottom = getPaddingBottom();
+
+        width = width - paddingLeft - paddingRight;
+        height = height - paddingTop - paddingBottom;
+        int w = (int) ((width - mItemPadding * (mLength - 1)) / (double) mLength);
         int i = 0;
-        int top = 0;
-        int bottom = measuredHeight;
+        int top = getPaddingTop();
+        int bottom = height - getPaddingBottom();
         for (Rect rect : mRects) {
-            int left = i * (mItemPadding + w);
+            int left = paddingLeft + i * (mItemPadding + w);
             int right = left + w;
             rect.set(left, top, right, bottom);
             i++;
@@ -88,6 +89,7 @@ public class NumInputEditText extends android.support.v7.widget.AppCompatEditTex
 
     @Override
     protected void onDraw(Canvas canvas) {
+        resetInputPath(mWidth, mHeight);
         drawInputRect(canvas);
         drawInputNum(canvas);
     }
